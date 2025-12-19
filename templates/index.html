@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CyberSec Tools - Outils de Sécurité</title>
+    <meta name="description" content="Suite d'outils de cybersécurité professionnels" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}" />
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1 class="title">CyberSec Tools</h1>
+            <p class="subtitle">Suite d'outils de sécurité professionnels</p>
+        </header>
+
+        <!-- Tools Grid -->
+        <main class="tools-grid">
+
+            <!-- Password Hash Tool -->
+            <section class="tool-card">
+                <div class="tool-header">
+                    <h2>Hachage de Mot de Passe</h2>
+                    <span class="tool-badge">Cryptographie</span>
+                </div>
+                
+                <div class="tool-body">
+                    <div class="input-group">
+                        <label for="password-hash">Mot de passe</label>
+                        <input 
+                            type="password" 
+                            id="password-hash" 
+                            placeholder="Entrez un mot de passe"
+                            autocomplete="off"
+                        />
+                    </div>
+
+                    <div class="input-group">
+                        <label for="hash-algo">Algorithme</label>
+                        <select id="hash-algo" class="select-input">
+                            <option value="sha256">SHA-256</option>
+                            <option value="sha512">SHA-512</option>
+                            <option value="bcrypt">bcrypt (recommandé)</option>
+                            <option value="md5">MD5 (obsolète)</option>
+                        </select>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="hashPassword()">
+                        Générer le hash
+                    </button>
+
+                    <div id="hash-result" class="result"></div>
+                </div>
+            </section>
+
+            <!-- VirusTotal Scanner -->
+            <section class="tool-card">
+                <div class="tool-header">
+                    <h2>Analyse VirusTotal</h2>
+                    <span class="tool-badge">Détection</span>
+                </div>
+
+                <div class="tool-body">
+                    <div class="input-group">
+                        <label for="virus-url-input">URL à analyser</label>
+                        <input 
+                            type="url" 
+                            id="virus-url-input" 
+                            placeholder="https://example.com"
+                            autocomplete="off"
+                        />
+                    </div>
+
+                    <button class="btn btn-primary" onclick="scanVirusTotal()">
+                        Lancer l'analyse
+                    </button>
+
+                    <div id="virus-result" class="result"></div>
+                </div>
+            </section>
+
+            <!-- Email Validator -->
+            <section class="tool-card">
+                <div class="tool-header">
+                    <h2>Validation Email</h2>
+                    <span class="tool-badge">Vérification</span>
+                </div>
+
+                <div class="tool-body">
+                    <div class="input-group">
+                        <label for="email-input">Adresse email</label>
+                        <input 
+                            type="email" 
+                            id="email-input" 
+                            placeholder="exemple@domaine.com"
+                            autocomplete="off"
+                        />
+                    </div>
+
+                    <button class="btn btn-primary" onclick="validateEmail()">
+                        Vérifier
+                    </button>
+
+                    <div id="email-result" class="result"></div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p class="footer-text">
+                <span>Développé par</span>
+                <a href="https://lmcv.vercel.app" target="_blank" rel="noopener" class="footer-link">
+                    Ludovic Mouly
+                </a>
+                <span> 2025</span>
+            </p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
