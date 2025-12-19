@@ -241,8 +241,8 @@ Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
 ## Auteur
 
 **Ludovic Mouly**  
-Portfolio : https://devlm.fr  
-GitHub : https://github.com/votre-username
+Portfolio : https://lmcv.vercel.app  
+GitHub : https://github.com/Lud-ly
 
 ## Support
 
