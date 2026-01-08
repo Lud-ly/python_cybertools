@@ -224,26 +224,6 @@ async function analyzeLogs() {
     }
 }
 
-async function enrichIOC() {
-    const ioc = document.getElementById('ioc-input').value;
-    const iocType = document.getElementById('ioc-type').value;
-    const vtApi = document.getElementById('vt-api').value;
-    const shodanApi = document.getElementById('shodan-api').value;
-    
-    if (!ioc) return showResult('ioc-result', 'IOC requis', true);
-    
-    showResult('ioc-result', '<div class="loading"></div> Enrichissement en cours...');
-    const result = await apiCall('/api/ioc-enrich', {
-        ioc, type: iocType, vt_api_key: vtApi, shodan_api_key: shodanApi
-    });
-    
-    if (result.error) {
-        showResult('ioc-result', `❌ ${result.error}`, true);
-    } else {
-        showResult('ioc-result', `<pre>${JSON.stringify(result.data, null, 2)}</pre>`);
-    }
-}
-
 // Reconnaissance
 async function analyzeGit() {
     const repo = document.getElementById('git-repo').value;
@@ -651,6 +631,84 @@ async function getVaultEntry() {
             html += `<p><strong>Password:</strong> <span style="background:#000; padding:5px; user-select:all;">${entry.password}</span></p>`;
             html += `<p><strong>Catégorie:</strong> ${entry.category}</p>`;
             if (entry.notes) html += `<p><strong>Notes:</strong> ${entry.notes}</p>`;
+            
+            showResult(resultDiv, html, 'success');
+        } else {
+            showResult(resultDiv, `❌ ${data.error}`, 'error');
+        }
+    } catch (error) {
+        showResult(resultDiv, `❌ Erreur: ${error.message}`, 'error');
+    }
+}
+
+async function enrichIOC() {
+    const ioc = document.getElementById('ioc-input').value.trim();
+    const iocType = document.getElementById('ioc-type').value;
+    const vtApi = document.getElementById('vt-api').value.trim();
+    const shodanApi = document.getElementById('shodan-api').value.trim();
+    const resultDiv = document.getElementById('ioc-result');
+    
+    if (!ioc) {
+        showResult(resultDiv, '❌ IOC requis', 'error');
+        return;
+    }
+    
+    showResult(resultDiv, '⏳ Enrichissement en cours...', '');
+    
+    try {
+        const response = await fetch('/api/ioc-enrich', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                ioc,
+                ioc_type: iocType,
+                vt_api_key: vtApi,
+                shodan_api_key: shodanApi
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            let html = `<h3>🔍 Enrichissement de ${data.ioc}</h3>`;
+            
+            // VirusTotal
+            html += '<hr><h4>🛡️ VirusTotal</h4>';
+            if (data.enrichment.virustotal.error) {
+                html += `<p style="color:orange;">⚠️ ${data.enrichment.virustotal.error}</p>`;
+            } else if (data.enrichment.virustotal.note) {
+                html += `<p style="color:gray;">${data.enrichment.virustotal.note}</p>`;
+            } else {
+                const vt = data.enrichment.virustotal;
+                const detections = vt.detections || {};
+                html += `<p><strong>Malicious:</strong> <span style="color:${detections.malicious > 0 ? 'red' : 'green'};">${detections.malicious}</span></p>`;
+                html += `<p><strong>Suspicious:</strong> ${detections.suspicious}</p>`;
+                html += `<p><strong>Harmless:</strong> ${detections.harmless}</p>`;
+                html += `<p><strong>Reputation:</strong> ${vt.reputation}</p>`;
+                html += `<p><strong>Country:</strong> ${vt.country}</p>`;
+                html += `<p><strong>ASN:</strong> ${vt.asn} (${vt.as_owner})</p>`;
+            }
+            
+            // Shodan
+            html += '<hr><h4>🌐 Shodan</h4>';
+            if (data.enrichment.shodan.error) {
+                html += `<p style="color:orange;">⚠️ ${data.enrichment.shodan.error}</p>`;
+            } else if (data.enrichment.shodan.note) {
+                html += `<p style="color:gray;">${data.enrichment.shodan.note}</p>`;
+            } else {
+                const shodan = data.enrichment.shodan;
+                html += `<p><strong>Organisation:</strong> ${shodan.org}</p>`;
+                html += `<p><strong>ISP:</strong> ${shodan.isp}</p>`;
+                html += `<p><strong>Localisation:</strong> ${shodan.city}, ${shodan.country}</p>`;
+                html += `<p><strong>Ports ouverts (${shodan.total_ports}):</strong> ${shodan.open_ports.join(', ')}</p>`;
+                html += `<p><strong>OS:</strong> ${shodan.os}</p>`;
+                
+                if (shodan.total_vulns > 0) {
+                    html += `<p style="color:red;"><strong>⚠️ Vulnérabilités (${shodan.total_vulns}):</strong> ${shodan.vulns.join(', ')}</p>`;
+                } else {
+                    html += `<p style="color:green;">✅ Aucune vulnérabilité connue</p>`;
+                }
+            }
             
             showResult(resultDiv, html, 'success');
         } else {

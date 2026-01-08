@@ -211,7 +211,8 @@ def health_check():
             'nmap_scanner',
             'pentest_nmap',
             'port_scanner',
-            'securevault', 
+            'securevault',
+            'ioc_enrichment', 
             'gitstats',
             'password_manager',
             'web_enumerator',
@@ -443,4 +444,89 @@ def securevault_unlock():
         print(f"[ERROR UNLOCK] Exception: {e}")  # DEBUG
         import traceback
         traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
+# ========== IOC Enrichment (VirusTotal + Shodan) ==========
+
+@api_blueprint.route('/api/ioc-enrich', methods=['POST'])
+def ioc_enrichment():
+    """Enrichir un IOC avec VirusTotal et Shodan"""
+    try:
+        data = request.get_json()
+        ioc = data.get('ioc', '').strip()
+        ioc_type = data.get('ioc_type', 'ip')  # ip ou domain
+        vt_api_key = data.get('vt_api_key', '')
+        shodan_api_key = data.get('shodan_api_key', '')
+        
+        if not ioc:
+            return jsonify({'error': 'IOC requis'}), 400
+        
+        from modules.ioc_enrichment import enrich_ioc_api
+        
+        # Enrichissement
+        result = enrich_ioc_api(
+            ioc=ioc,
+            ioc_type=ioc_type,
+            vt_api=vt_api_key,
+            shodan_api=shodan_api_key
+        )
+        
+        if 'error' in result:
+            return jsonify(result), 400
+        
+        return jsonify({
+            'success': True,
+            'ioc': ioc,
+            'type': ioc_type,
+            'enrichment': result
+        })
+    
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@api_blueprint.route('/api/ioc-enrich-batch', methods=['POST'])
+def ioc_enrichment_batch():
+    """Enrichir plusieurs IOCs en batch"""
+    try:
+        data = request.get_json()
+        iocs_list = data.get('iocs', [])  # Liste d'IOCs
+        ioc_type = data.get('ioc_type', 'ip')
+        vt_api_key = data.get('vt_api_key', '')
+        shodan_api_key = data.get('shodan_api_key', '')
+        
+        if not iocs_list:
+            return jsonify({'error': 'Liste d\'IOCs vide'}), 400
+        
+        from modules.ioc_enrichment import enrich_ioc_api
+        
+        results = []
+        for ioc in iocs_list:
+            try:
+                result = enrich_ioc_api(
+                    ioc=ioc.strip(),
+                    ioc_type=ioc_type,
+                    vt_api=vt_api_key,
+                    shodan_api=shodan_api_key
+                )
+                results.append({
+                    'ioc': ioc,
+                    'status': 'success' if 'error' not in result else 'error',
+                    'data': result
+                })
+            except Exception as e:
+                results.append({
+                    'ioc': ioc,
+                    'status': 'error',
+                    'error': str(e)
+                })
+        
+        return jsonify({
+            'success': True,
+            'total': len(iocs_list),
+            'results': results
+        })
+    
+    except Exception as e:
         return jsonify({'error': str(e)}), 500
