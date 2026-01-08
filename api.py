@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-
+import os
 # Modules existants
 from modules.security import (
     hash_password_func,
@@ -209,6 +209,9 @@ def health_check():
             'security',
             'virus_total',
             'nmap_scanner',
+            'pentest_nmap',
+            'port_scanner',
+            'securevault', 
             'gitstats',
             'password_manager',
             'web_enumerator',
@@ -216,3 +219,228 @@ def health_check():
             'osint_recon'
         ]
     })
+
+# ========== Pentest Nmap Automation ==========
+
+@api_blueprint.route('/api/pentest-nmap', methods=['POST'])
+def pentest_nmap_automation():
+    """Automatisation de pentest avec Nmap (scan rapide, complet, vulns, OS)"""
+    try:
+        data = request.get_json()
+        target = data.get('target', '').strip()
+        scan_mode = data.get('scan_mode', 'quick')  # quick, full, vuln, os, all
+        ports = data.get('ports', '1-1000')
+        
+        if not target:
+            return jsonify({'error': 'Target manquant'}), 400
+        
+        # Import du module pentest
+        from modules.pentest_nmap import PentestNmap
+        
+        # Initialisation du scanner
+        pentest = PentestNmap(target)
+        
+        # Vérification que Nmap est installé
+        if not pentest.check_nmap_installed():
+            return jsonify({
+                'error': 'Nmap non installé sur le système',
+                'install_instructions': {
+                    'macOS': 'brew install nmap',
+                    'Linux': 'sudo apt-get install nmap',
+                    'Windows': 'https://nmap.org/download.html'
+                }
+            }), 500
+        
+        # Exécution des scans selon le mode
+        results = {
+            'target': target,
+            'scan_mode': scan_mode,
+            'scans_executed': []
+        }
+        
+        if scan_mode == 'quick' or scan_mode == 'all':
+            pentest.quick_scan()
+            results['scans_executed'].append('quick_scan')
+        
+        if scan_mode == 'full' or scan_mode == 'all':
+            pentest.full_scan(ports)
+            results['scans_executed'].append('full_scan')
+        
+        if scan_mode == 'vuln' or scan_mode == 'all':
+            pentest.vuln_scan()
+            results['scans_executed'].append('vuln_scan')
+        
+        if scan_mode == 'os':
+            pentest.os_detection()
+            results['scans_executed'].append('os_detection')
+        
+        # Récupération des résultats
+        results['data'] = pentest.results
+        
+        # Génération du rapport (optionnel)
+        if data.get('generate_report', False):
+            output_dir = data.get('output_dir', 'reports')
+            report_file = pentest.generate_report(output_dir)
+            results['report_file'] = report_file
+        
+        return jsonify(results)
+    
+    except ImportError as e:
+        return jsonify({
+            'error': 'Module python-nmap non installé',
+            'install_command': 'pip install python-nmap',
+            'details': str(e)
+        }), 500
+    
+    except Exception as e:
+        return jsonify({
+            'error': f'Erreur lors du scan: {str(e)}',
+            'type': type(e).__name__
+        }), 500
+
+# ========== Port Scanner with Banner Grabbing ==========
+
+@api_blueprint.route('/api/port-scanner', methods=['POST'])
+def port_scanner_advanced():
+    """Scanner de ports avancé avec récupération de bannières"""
+    try:
+        data = request.get_json()
+        target = data.get('target', '').strip()
+        ports_range = data.get('ports', '1-1000')
+        threads = data.get('threads', 100)
+        timeout = data.get('timeout', 1.0)
+        
+        if not target:
+            return jsonify({'error': 'Target manquant'}), 400
+        
+        # Validation du range de ports
+        try:
+            start, end = map(int, ports_range.split('-'))
+            if start < 1 or end > 65535 or start > end:
+                return jsonify({'error': 'Range de ports invalide (1-65535)'}), 400
+        except ValueError:
+            return jsonify({'error': 'Format de ports invalide (ex: 1-1000)'}), 400
+        
+        # Import du module scanner
+        from modules.port_scanner import scan_target_api
+        
+        # Lancement du scan
+        results = scan_target_api(target, range(start, end + 1), threads, timeout)
+        
+        return jsonify({
+            'target': target,
+            'ports_scanned': f'{start}-{end}',
+            'total_scanned': end - start + 1,
+            'open_ports_count': len(results),
+            'open_ports': results,
+            'scan_completed': True
+        })
+    
+    except Exception as e:
+        return jsonify({
+            'error': f'Erreur lors du scan: {str(e)}',
+            'type': type(e).__name__
+        }), 500
+
+
+# ========== SecureVault - Password Manager ==========
+
+@api_blueprint.route('/api/securevault/init', methods=['POST'])
+def securevault_init():
+    """Initialiser un nouveau vault chiffré"""
+    try:
+        data = request.get_json()
+        print(f"[DEBUG] Data reçue: {data}")  # DEBUG
+        
+        master_password = data.get('master_password', '')
+        vault_name = data.get('vault_name', 'default')
+        
+        print(f"[DEBUG] Master password length: {len(master_password)}")  # DEBUG
+        print(f"[DEBUG] Vault name: {vault_name}")  # DEBUG
+        
+        if not master_password:
+            print("[DEBUG] Master password vide!")  # DEBUG
+            return jsonify({'error': 'Master password requis'}), 400
+        
+        from modules.securevault import SecureVault, PasswordGenerator
+        
+        # Vérifier la force du master password
+        strength = PasswordGenerator.check_strength(master_password)
+        print(f"[DEBUG] Strength score: {strength['score']}")  # DEBUG
+        
+        if strength['score'] < 60:
+            print(f"[DEBUG] Password trop faible: {strength}")  # DEBUG
+            return jsonify({
+                'error': 'Master password trop faible',
+                'strength': strength,
+                'recommendation': 'Utilisez au moins 12 caractères avec majuscules, minuscules, chiffres et symboles'
+            }), 400
+        
+        # Créer le dossier vaults s'il n'existe pas
+        os.makedirs('vaults', exist_ok=True)
+        
+        vault_path = f'vaults/{vault_name}.db'
+        print(f"[DEBUG] Vault path: {vault_path}")  # DEBUG
+        
+        vault = SecureVault(vault_path)
+        
+        if vault.initialize(master_password):
+            print("[DEBUG] Vault créé avec succès!")  # DEBUG
+            return jsonify({
+                'success': True,
+                'message': 'Vault créé avec succès',
+                'vault_name': vault_name,
+                'strength': strength
+            })
+        else:
+            print("[DEBUG] Le vault existe déjà")  # DEBUG
+            return jsonify({'error': 'Le vault existe déjà'}), 400
+    
+    except Exception as e:
+        print(f"[ERROR] Exception: {e}")  # DEBUG
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
+
+@api_blueprint.route('/api/securevault/unlock', methods=['POST'])
+def securevault_unlock():
+    """Déverrouiller un vault existant"""
+    try:
+        data = request.get_json()
+        print(f"[DEBUG UNLOCK] Data reçue: {data}")  # DEBUG
+        
+        master_password = data.get('master_password', '')
+        vault_name = data.get('vault_name', 'default')
+        
+        print(f"[DEBUG UNLOCK] Master password length: {len(master_password)}")  # DEBUG
+        print(f"[DEBUG UNLOCK] Vault name: {vault_name}")  # DEBUG
+        
+        if not master_password:
+            return jsonify({'error': 'Master password requis'}), 400
+        
+        from modules.securevault import SecureVault
+        
+        vault_path = f'vaults/{vault_name}.db'
+        print(f"[DEBUG UNLOCK] Vault path: {vault_path}")  # DEBUG
+        print(f"[DEBUG UNLOCK] Vault existe: {os.path.exists(vault_path)}")  # DEBUG
+        
+        vault = SecureVault(vault_path)
+        
+        if vault.unlock(master_password):
+            print("[DEBUG UNLOCK] Vault déverrouillé avec succès!")  # DEBUG
+            return jsonify({
+                'success': True,
+                'message': 'Vault déverrouillé',
+                'vault_name': vault_name,
+                'entries_count': len(vault.vault_data['entries'])
+            })
+        else:
+            print("[DEBUG UNLOCK] Échec du déverrouillage")  # DEBUG
+            return jsonify({'error': 'Master password incorrect ou vault introuvable'}), 401
+    
+    except Exception as e:
+        print(f"[ERROR UNLOCK] Exception: {e}")  # DEBUG
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500

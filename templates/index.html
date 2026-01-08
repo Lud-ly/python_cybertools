@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}" />
     <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔒</text></svg>">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M12 2L4 5v6.5C4 16.92 7.5 21.5 12 22c4.5-.5 8-5.08 8-10.5V5l-8-3z' fill='%23667eea'/%3E%3Cpath d='M12 8a2 2 0 012 2v1h-4v-1a2 2 0 012-2z' fill='%23fff'/%3E%3Crect x='9' y='11' width='6' height='5' rx='1' fill='%23fff'/%3E%3C/svg%3E">
     <title>CyberSec Tools - Suite Complète</title>
 </head>
 <body>
@@ -132,6 +132,42 @@
                 </div>
             </section>
 
+            <!-- NOUVEAU: Pentest Nmap Automation -->
+            <section class="tool-card">
+                <div class="tool-header">
+                    <h2>Pentest Nmap Auto</h2>
+                    <span class="tool-badge">Pentest</span>
+                </div>
+                <div class="tool-body">
+                    <div class="input-group">
+                        <label for="pentest-target">Cible</label>
+                        <input type="text" id="pentest-target" placeholder="example.com ou 192.168.1.1" />
+                    </div>
+                    <div class="input-group">
+                        <label for="pentest-mode">Mode de scan</label>
+                        <select id="pentest-mode" onchange="togglePentestPorts()">
+                            <option value="quick">Rapide (top 100 ports)</option>
+                            <option value="full">Complet + Services</option>
+                            <option value="vuln">Vulnérabilités (NSE)</option>
+                            <option value="os">Détection OS (root)</option>
+                            <option value="all">Tous les scans</option>
+                        </select>
+                    </div>
+                    <div class="input-group" id="pentest-ports-group" style="display:none;">
+                        <label for="pentest-ports">Range de ports</label>
+                        <input type="text" id="pentest-ports" value="1-1000" placeholder="1-1000" />
+                    </div>
+                    <div class="input-group">
+                        <label>
+                            <input type="checkbox" id="generate-report" />
+                            Générer un rapport JSON
+                        </label>
+                    </div>
+                    <button class="btn btn-primary" onclick="runPentestNmap()">Lancer Pentest</button>
+                    <div id="pentest-result" class="result" style="display:none;"></div>
+                </div>
+            </section>
+
             <section class="tool-card">
                 <div class="tool-header">
                     <h2>Analyseur de Logs</h2>
@@ -176,6 +212,33 @@
                     <div id="ioc-result" class="result" style="display:none;"></div>
                 </div>
             </section>
+            <section class="tool-card">
+                <div class="tool-header">
+                    <h2>Port Scanner Pro</h2>
+                    <span class="tool-badge">Recon</span>
+                </div>
+                <div class="tool-body">
+                    <div class="input-group">
+                        <label for="portscan-target">Cible</label>
+                        <input type="text" id="portscan-target" placeholder="example.com ou 192.168.1.1" />
+                    </div>
+                    <div class="input-group">
+                        <label for="portscan-range">Range de ports</label>
+                        <input type="text" id="portscan-range" value="1-1000" placeholder="1-1000" />
+                    </div>
+                    <div class="input-group">
+                        <label for="portscan-threads">Threads parallèles</label>
+                        <input type="number" id="portscan-threads" value="100" min="1" max="500" />
+                    </div>
+                    <div class="input-group">
+                        <label for="portscan-timeout">Timeout (secondes)</label>
+                        <input type="number" id="portscan-timeout" value="1" min="0.5" max="5" step="0.1" />
+                    </div>
+                    <button class="btn btn-primary" onclick="runPortScanner()">Scanner</button>
+                    <div id="portscan-result" class="result" style="display:none;"></div>
+                </div>
+            </section>
+            
         </main>
 
         <!-- Section 3: Reconnaissance -->
@@ -249,6 +312,89 @@
                 </div>
             </section>
         </main>
+        <!-- Section 4: Gestion de Mots de Passe -->
+<h2 class="section-title">🔐 Gestion de Mots de Passe</h2>
+<main class="tools-grid">
+    <section class="tool-card">
+        <div class="tool-header">
+            <h2>SecureVault</h2>
+            <span class="tool-badge">AES-256</span>
+        </div>
+        <div class="tool-body">
+            <div class="input-group">
+                <label for="vault-master-pw">Master Password</label>
+                <input type="password" id="vault-master-pw" placeholder="Votre master password" />
+            </div>
+            <div class="input-group">
+                <label for="vault-name">Nom du Vault</label>
+                <input type="text" id="vault-name" value="default" placeholder="default" />
+            </div>
+            <button class="btn btn-primary" onclick="initVault()">Créer Vault</button>
+            <button class="btn btn-primary" onclick="unlockVault()">Déverrouiller</button>
+            <div id="vault-status" class="result" style="display:none;"></div>
+        </div>
+    </section>
+
+    <section class="tool-card">
+        <div class="tool-header">
+            <h2>Ajouter Entrée</h2>
+            <span class="tool-badge">Sécurité</span>
+        </div>
+        <div class="tool-body">
+            <div class="input-group">
+                <label for="entry-name">Nom</label>
+                <input type="text" id="entry-name" placeholder="Gmail, Facebook..." />
+            </div>
+            <div class="input-group">
+                <label for="entry-username">Username/Email</label>
+                <input type="text" id="entry-username" placeholder="user@example.com" />
+            </div>
+            <div class="input-group">
+                <label for="entry-password">Password</label>
+                <input type="password" id="entry-password" placeholder="Mot de passe" />
+            </div>
+            <div class="input-group">
+                <label for="entry-category">Catégorie</label>
+                <select id="entry-category">
+                    <option value="General">General</option>
+                    <option value="Social">Social</option>
+                    <option value="Banking">Banking</option>
+                    <option value="Work">Work</option>
+                    <option value="Email">Email</option>
+                </select>
+            </div>
+            <button class="btn btn-primary" onclick="addVaultEntry()">Ajouter</button>
+            <div id="add-entry-result" class="result" style="display:none;"></div>
+        </div>
+    </section>
+
+    <section class="tool-card">
+        <div class="tool-header">
+            <h2>Lister Entrées</h2>
+            <span class="tool-badge">Vault</span>
+        </div>
+        <div class="tool-body">
+            <button class="btn btn-primary" onclick="listVaultEntries()">Lister Tout</button>
+            <div id="list-entries-result" class="result" style="display:none;"></div>
+        </div>
+    </section>
+
+    <section class="tool-card">
+        <div class="tool-header">
+            <h2>Récupérer Password</h2>
+            <span class="tool-badge">Accès</span>
+        </div>
+        <div class="tool-body">
+            <div class="input-group">
+                <label for="get-entry-name">Nom de l'entrée</label>
+                <input type="text" id="get-entry-name" placeholder="Gmail" />
+            </div>
+            <button class="btn btn-primary" onclick="getVaultEntry()">Récupérer</button>
+            <div id="get-entry-result" class="result" style="display:none;"></div>
+        </div>
+    </section>
+</main>
+
 
         <footer class="footer">
             <p>
