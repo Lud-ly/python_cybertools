@@ -13,6 +13,7 @@ cycler==0.12.1
 Flask==3.0.0
 Flask-Cors==4.0.0
 fonttools==4.58.2
+GitPython==3.1.43
 gunicorn==21.2.0
 idna==3.10
 itsdangerous==2.2.0
@@ -34,6 +35,7 @@ pyOpenSSL==25.1.0
 pyparsing==3.2.3
 python-dateutil==2.9.0.post0
 python-dotenv==1.2.1
+python-nmap==0.7.1
 pytz==2025.2
 requests==2.32.4
 service-identity==24.2.0

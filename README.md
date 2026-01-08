@@ -260,5 +260,25 @@ Pour signaler un bug ou demander une fonctionnalité, ouvrez une issue sur GitHu
 - Déploiement sur Render
 
 ---
+# Script de Pentest avec VRAI Nmap
+
+## Scan rapide (top 100 ports)
+python pentest_auto.py --target example.com --quick
+
+## Scan complet avec détection de services
+python pentest_auto.py --target example.com --full
+
+## Scan de vulnérabilités
+python pentest_auto.py --target example.com --vuln
+
+## Scan complet (quick + full + vuln)
+python pentest_auto.py --target example.com --all
+
+## Scan personnalisé
+python pentest_auto.py --target 192.168.1.1 --full --ports 1-65535
+
+## Détection OS (nécessite sudo)
+sudo python pentest_auto.py --target example.com --os
+
 
 Développé avec Flask par Ludovic Mouly - 2025

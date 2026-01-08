@@ -3,123 +3,260 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CyberSec Tools - Outils de Sécurité</title>
-    <meta name="description" content="Suite d'outils de cybersécurité professionnels" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}" />
+    <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔒</text></svg>">
+    <title>CyberSec Tools - Suite Complète</title>
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
         <header class="header">
-            <h1 class="title">CyberSec Tools</h1>
-            <p class="subtitle">Suite d'outils de sécurité professionnels</p>
+            <h1 class="title">⚡ LM CyberSec Tools</h1>
+            <p class="subtitle">Suite complète d'outils de cybersécurité professionnels</p>
         </header>
 
-        <!-- Tools Grid -->
+        <!-- Section 1: Cryptographie -->
+        <h2 class="section-title">🔐 Cryptographie & Mots de passe</h2>
         <main class="tools-grid">
-
-            <!-- Password Hash Tool -->
             <section class="tool-card">
                 <div class="tool-header">
-                    <h2>Hachage de Mot de Passe</h2>
-                    <span class="tool-badge">Cryptographie</span>
+                    <h2>Hachage</h2>
+                    <span class="tool-badge">Crypto</span>
                 </div>
-                
                 <div class="tool-body">
                     <div class="input-group">
                         <label for="password-hash">Mot de passe</label>
-                        <input 
-                            type="password" 
-                            id="password-hash" 
-                            placeholder="Entrez un mot de passe"
-                            autocomplete="off"
-                        />
+                        <input type="password" id="password-hash" placeholder="Entrez un mot de passe" />
                     </div>
-
                     <div class="input-group">
                         <label for="hash-algo">Algorithme</label>
-                        <select id="hash-algo" class="select-input">
+                        <select id="hash-algo">
                             <option value="sha256">SHA-256</option>
                             <option value="sha512">SHA-512</option>
-                            <option value="bcrypt">bcrypt (recommandé)</option>
-                            <option value="md5">MD5 (obsolète)</option>
+                            <option value="bcrypt">bcrypt</option>
+                            <option value="md5">MD5</option>
                         </select>
                     </div>
-
-                    <button class="btn btn-primary" onclick="hashPassword()">
-                        Générer le hash
-                    </button>
-
-                    <div id="hash-result" class="result"></div>
+                    <button class="btn btn-primary" onclick="hashPassword()">Hasher</button>
+                    <div id="hash-result" class="result" style="display:none;"></div>
                 </div>
             </section>
 
-            <!-- VirusTotal Scanner -->
             <section class="tool-card">
                 <div class="tool-header">
-                    <h2>Analyse VirusTotal</h2>
-                    <span class="tool-badge">Détection</span>
+                    <h2>Générateur</h2>
+                    <span class="tool-badge">Sécurité</span>
                 </div>
-
                 <div class="tool-body">
                     <div class="input-group">
-                        <label for="virus-url-input">URL à analyser</label>
-                        <input 
-                            type="url" 
-                            id="virus-url-input" 
-                            placeholder="https://example.com"
-                            autocomplete="off"
-                        />
+                        <label for="pwd-length">Longueur (8-128)</label>
+                        <input type="number" id="pwd-length" value="16" min="8" max="128" />
                     </div>
-
-                    <button class="btn btn-primary" onclick="scanVirusTotal()">
-                        Lancer l'analyse
-                    </button>
-
-                    <div id="virus-result" class="result"></div>
+                    <button class="btn btn-primary" onclick="generatePassword()">Générer</button>
+                    <div id="gen-result" class="result" style="display:none;"></div>
                 </div>
             </section>
 
-            <!-- Email Validator -->
+            <section class="tool-card">
+                <div class="tool-header">
+                    <h2>Force du Mot de Passe</h2>
+                    <span class="tool-badge">Analyse</span>
+                </div>
+                <div class="tool-body">
+                    <div class="input-group">
+                        <label for="password-strength">Mot de passe</label>
+                        <input type="password" id="password-strength" placeholder="Analyser la force" />
+                    </div>
+                    <button class="btn btn-primary" onclick="checkStrength()">Analyser</button>
+                    <div id="strength-result" class="result" style="display:none;"></div>
+                </div>
+            </section>
+
             <section class="tool-card">
                 <div class="tool-header">
                     <h2>Validation Email</h2>
                     <span class="tool-badge">Vérification</span>
                 </div>
-
                 <div class="tool-body">
                     <div class="input-group">
                         <label for="email-input">Adresse email</label>
-                        <input 
-                            type="email" 
-                            id="email-input" 
-                            placeholder="exemple@domaine.com"
-                            autocomplete="off"
-                        />
+                        <input type="email" id="email-input" placeholder="exemple@domaine.com" />
                     </div>
+                    <button class="btn btn-primary" onclick="validateEmail()">Vérifier</button>
+                    <div id="email-result" class="result" style="display:none;"></div>
+                </div>
+            </section>
+        </main>
 
-                    <button class="btn btn-primary" onclick="validateEmail()">
-                        Vérifier
-                    </button>
-
-                    <div id="email-result" class="result"></div>
+        <!-- Section 2: Analyse & Détection -->
+        <h2 class="section-title">🛡️ Analyse & Détection</h2>
+        <main class="tools-grid">
+            <section class="tool-card">
+                <div class="tool-header">
+                    <h2>VirusTotal</h2>
+                    <span class="tool-badge">Détection</span>
+                </div>
+                <div class="tool-body">
+                    <div class="input-group">
+                        <label for="virus-url">URL</label>
+                        <input type="url" id="virus-url" placeholder="https://example.com" />
+                    </div>
+                    <button class="btn btn-primary" onclick="scanVirusTotal()">Analyser</button>
+                    <div id="virus-result" class="result" style="display:none;"></div>
                 </div>
             </section>
 
+            <section class="tool-card">
+                <div class="tool-header">
+                    <h2>Scanner Nmap</h2>
+                    <span class="tool-badge">Recon</span>
+                </div>
+                <div class="tool-body">
+                    <div class="input-group">
+                        <label for="nmap-target">Cible</label>
+                        <input type="text" id="nmap-target" placeholder="example.com" />
+                    </div>
+                    <div class="input-group">
+                        <label for="scan-type">Type</label>
+                        <select id="scan-type" onchange="togglePorts()">
+                            <option value="quick">Rapide</option>
+                            <option value="custom">Personnalisé</option>
+                        </select>
+                    </div>
+                    <div class="input-group" id="ports-group" style="display:none;">
+                        <label for="ports-range">Ports</label>
+                        <input type="text" id="ports-range" value="1-1000" />
+                    </div>
+                    <button class="btn btn-primary" onclick="runNmapScan()">Scanner</button>
+                    <div id="nmap-result" class="result" style="display:none;"></div>
+                </div>
+            </section>
+
+            <section class="tool-card">
+                <div class="tool-header">
+                    <h2>Analyseur de Logs</h2>
+                    <span class="tool-badge">Forensics</span>
+                </div>
+                <div class="tool-body">
+                    <div class="input-group">
+                        <label for="log-content">Logs Apache/Nginx</label>
+                        <textarea id="log-content" rows="6" placeholder="Collez vos logs ici..."></textarea>
+                    </div>
+                    <button class="btn btn-primary" onclick="analyzeLogs()">Analyser</button>
+                    <div id="log-result" class="result" style="display:none;"></div>
+                </div>
+            </section>
+
+            <section class="tool-card">
+                <div class="tool-header">
+                    <h2>Enrichissement IOC</h2>
+                    <span class="tool-badge">Threat Intel</span>
+                </div>
+                <div class="tool-body">
+                    <div class="input-group">
+                        <label for="ioc-input">IOC (IP ou Domaine)</label>
+                        <input type="text" id="ioc-input" placeholder="8.8.8.8" />
+                    </div>
+                    <div class="input-group">
+                        <label for="ioc-type">Type</label>
+                        <select id="ioc-type">
+                            <option value="ip">IP</option>
+                            <option value="domain">Domaine</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="vt-api">Clé API VirusTotal (opt.)</label>
+                        <input type="text" id="vt-api" placeholder="Votre clé VT" />
+                    </div>
+                    <div class="input-group">
+                        <label for="shodan-api">Clé API Shodan (opt.)</label>
+                        <input type="text" id="shodan-api" placeholder="Votre clé Shodan" />
+                    </div>
+                    <button class="btn btn-primary" onclick="enrichIOC()">Enrichir</button>
+                    <div id="ioc-result" class="result" style="display:none;"></div>
+                </div>
+            </section>
         </main>
 
-        <!-- Footer -->
+        <!-- Section 3: Reconnaissance -->
+        <h2 class="section-title">🔍 Reconnaissance & OSINT</h2>
+        <main class="tools-grid">
+            <section class="tool-card">
+                <div class="tool-header">
+                    <h2>Git Statistics</h2>
+                    <span class="tool-badge">Analyse</span>
+                </div>
+                <div class="tool-body">
+                    <div class="input-group">
+                        <label for="git-repo">URL du dépôt</label>
+                        <input type="url" id="git-repo" placeholder="https://github.com/user/repo" />
+                    </div>
+                    <button class="btn btn-primary" onclick="analyzeGit()">Analyser</button>
+                    <div id="git-result" class="result" style="display:none;"></div>
+                </div>
+            </section>
+
+            <section class="tool-card">
+                <div class="tool-header">
+                    <h2>Énumération Web</h2>
+                    <span class="tool-badge">Recon</span>
+                </div>
+                <div class="tool-body">
+                    <div class="input-group">
+                        <label for="web-enum-url">URL</label>
+                        <input type="url" id="web-enum-url" placeholder="https://example.com" />
+                    </div>
+                    <button class="btn btn-primary" onclick="enumerateWeb()">Énumérer</button>
+                    <div id="web-enum-result" class="result" style="display:none;"></div>
+                </div>
+            </section>
+
+            <section class="tool-card">
+                <div class="tool-header">
+                    <h2>OSINT</h2>
+                    <span class="tool-badge">Investigation</span>
+                </div>
+                <div class="tool-body">
+                    <div class="input-group">
+                        <label for="osint-target">Cible</label>
+                        <input type="text" id="osint-target" placeholder="example.com" />
+                    </div>
+                    <button class="btn btn-primary" onclick="osintSearch()">Rechercher</button>
+                    <div id="osint-result" class="result" style="display:none;"></div>
+                </div>
+            </section>
+
+            <section class="tool-card">
+                <div class="tool-header">
+                    <h2>Brute Force HTTP</h2>
+                    <span class="tool-badge">Test</span>
+                </div>
+                <div class="tool-body">
+                    <div class="input-group">
+                        <label for="bf-url">URL de login</label>
+                        <input type="url" id="bf-url" placeholder="https://example.com/login" />
+                    </div>
+                    <div class="input-group">
+                        <label for="bf-username">Username</label>
+                        <input type="text" id="bf-username" placeholder="admin" />
+                    </div>
+                    <div class="input-group">
+                        <label for="bf-wordlist">Wordlist</label>
+                        <textarea id="bf-wordlist" rows="4" placeholder="password123&#10;admin123"></textarea>
+                    </div>
+                    <button class="btn btn-primary" onclick="bruteForce()">Tester</button>
+                    <div id="bf-result" class="result" style="display:none;"></div>
+                </div>
+            </section>
+        </main>
+
         <footer class="footer">
-            <p class="footer-text">
-                <span>Développé par</span>
-                <a href="https://lmcv.vercel.app" target="_blank" rel="noopener" class="footer-link">
-                    Ludovic Mouly
-                </a>
-                <span> 2025</span>
+            <p>
+                Développé par 
+                <a href="https://lmcv.vercel.app" target="_blank" class="footer-link">Ludovic Mouly</a>
+                © 2025
             </p>
         </footer>
     </div>
-
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>
