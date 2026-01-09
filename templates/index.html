@@ -16,8 +16,37 @@
         </header>
 
         <!-- Section 1: Cryptographie -->
-        <h2 class="section-title">🔐 Cryptographie & Mots de passe</h2>
+        <h2 class="section-title">Cryptographie & Mots de passe</h2>
         <main class="tools-grid">
+            <section class="tool-card">
+                <div class="tool-header">
+                    <h2>Générateur</h2>
+                    <span class="tool-badge">Sécurité</span>
+                </div>
+                <div class="tool-body">
+                    <div class="input-group">
+                        <label for="pwd-length">Longueur (8-128)</label>
+                        <input type="number" id="pwd-length" value="16" min="8" max="128" />
+                    </div>
+                    <button class="btn btn-primary" onclick="generatePassword()">Générer</button>
+                    <div id="gen-result" class="result" style="display:none;"></div>
+                </div>
+            </section>
+
+            <section class="tool-card">
+                <div class="tool-header">
+                    <h2>Force du MDP</h2>
+                    <span class="tool-badge">Analyse</span>
+                </div>
+                <div class="tool-body">
+                    <div class="input-group">
+                        <label for="password-strength">Mot de passe</label>
+                        <input type="password" id="password-strength" placeholder="Analyser la force" />
+                    </div>
+                    <button class="btn btn-primary" onclick="checkStrength()">Analyser</button>
+                    <div id="strength-result" class="result" style="display:none;"></div>
+                </div>
+            </section>
             <section class="tool-card">
                 <div class="tool-header">
                     <h2>Hachage</h2>
@@ -41,37 +70,6 @@
                     <div id="hash-result" class="result" style="display:none;"></div>
                 </div>
             </section>
-
-            <section class="tool-card">
-                <div class="tool-header">
-                    <h2>Générateur</h2>
-                    <span class="tool-badge">Sécurité</span>
-                </div>
-                <div class="tool-body">
-                    <div class="input-group">
-                        <label for="pwd-length">Longueur (8-128)</label>
-                        <input type="number" id="pwd-length" value="16" min="8" max="128" />
-                    </div>
-                    <button class="btn btn-primary" onclick="generatePassword()">Générer</button>
-                    <div id="gen-result" class="result" style="display:none;"></div>
-                </div>
-            </section>
-
-            <section class="tool-card">
-                <div class="tool-header">
-                    <h2>Force du Mot de Passe</h2>
-                    <span class="tool-badge">Analyse</span>
-                </div>
-                <div class="tool-body">
-                    <div class="input-group">
-                        <label for="password-strength">Mot de passe</label>
-                        <input type="password" id="password-strength" placeholder="Analyser la force" />
-                    </div>
-                    <button class="btn btn-primary" onclick="checkStrength()">Analyser</button>
-                    <div id="strength-result" class="result" style="display:none;"></div>
-                </div>
-            </section>
-
             <section class="tool-card">
                 <div class="tool-header">
                     <h2>Validation Email</h2>

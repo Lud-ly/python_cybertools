@@ -1,24 +1,37 @@
 async function hashPassword() {
-    const password = document.getElementById("password-hash").value;
-    const algo = document.getElementById("hash-algo").value;
+    const password = document.getElementById('password-hash').value;
+    const algorithm = document.getElementById('hash-algo').value;
+    
     if (!password) {
-        alert("Veuillez entrer un mot de passe");
+        alert('Entrez un mot de passe');
         return;
     }
-    const response = await fetch("/api/hash", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password, algorithm: algo }),
+    
+    const response = await fetch('/api/hash', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({password: password, algo: algorithm})
     });
-    const data = await response.json();
-    const resultDiv = document.getElementById("hash-result");
-    resultDiv.innerHTML = `
-        <h3>Résultat du hachage (${algo.toUpperCase()}):</h3>
-        <p><strong>Hash:</strong> ${data.hash}</p>
-        <p><strong>Longueur:</strong> ${data.length} caractères</p>
-    `;
-    resultDiv.classList.add("show");
+    
+    const result = await response.json();
+    console.log('DEBUG:', result);
+    const resultDiv = document.getElementById('hash-result');
+    
+    if (result.error) {
+        resultDiv.innerHTML = `<div class="error">❌ ${result.error}</div>`;
+    } else {
+      
+        resultDiv.innerHTML = `
+            <div class="success">
+                <strong>Algorithme :</strong> ${algorithm}<br>
+                <strong>Hash :</strong> <code>${typeof result.hash === 'object' ? JSON.stringify(result.hash) : result.hash}</code><br>
+            </div>
+        `;
+    }
+    
+    resultDiv.style.display = 'block';
 }
+
 
 async function scanVirusTotal() {
     const url = document.getElementById("virus-url-input").value.trim();
@@ -103,25 +116,35 @@ async function apiCall(endpoint, data) {
 }
 
 function showResult(elementId, content, isError = false) {
-    const el = document.getElementById(elementId);
+    let el = document.getElementById(elementId);
+    
+    // Si l'élément n'existe pas, le créer dynamiquement
+    if (!el) {
+        console.warn(`Element ${elementId} introuvable, création dynamique`);
+        el = document.createElement('div');
+        el.id = elementId;
+        el.className = 'result';
+        el.style.display = 'none';
+        
+        // Chercher le parent .tool-body le plus proche du bouton qui a appelé
+        const buttons = document.querySelectorAll(`[onclick*="${elementId}"]`);
+        if (buttons.length > 0) {
+            const toolBody = buttons[0].closest('.tool-body');
+            if (toolBody) {
+                toolBody.appendChild(el);
+            } else {
+                document.body.appendChild(el);
+            }
+        } else {
+            document.body.appendChild(el);
+        }
+    }
+    
     el.style.display = 'block';
     el.className = `result ${isError ? 'error' : 'success'}`;
     el.innerHTML = content;
 }
 
-// Cryptographie
-async function hashPassword() {
-    const password = document.getElementById('password-hash').value;
-    const algorithm = document.getElementById('hash-algo').value;
-    if (!password) return showResult('hash-result', 'Mot de passe requis', true);
-    
-    const result = await apiCall('/api/hash', { password, algorithm });
-    if (result.error) {
-        showResult('hash-result', `❌ ${result.error}`, true);
-    } else {
-        showResult('hash-result', `<strong>Hash ${algorithm}:</strong><br><pre>${result.hash || result.hashed_password}</pre>`);
-    }
-}
 
 async function generatePassword() {
     const length = parseInt(document.getElementById('pwd-length').value);
@@ -456,10 +479,9 @@ let currentVaultName = 'default';
 async function initVault() {
     const masterPw = document.getElementById('vault-master-pw').value;
     const vaultName = document.getElementById('vault-name').value || 'default';
-    const resultDiv = document.getElementById('vault-status');
     
     if (!masterPw) {
-        showResult(resultDiv, '❌ Master password requis', 'error');
+        showResult('vault-status', '❌ Master password requis', 'error');  // ← STRING pas ELEMENT
         return;
     }
     
@@ -475,7 +497,70 @@ async function initVault() {
         if (response.ok) {
             currentVaultMasterPassword = masterPw;
             currentVaultName = vaultName;
-            showResult(resultDiv, `✅ ${data.message}<br>Score: ${data.strength.score}/100 (${data.strength.rating})`, 'success');
+            showResult('vault-status', `✅ ${data.message}<br>Score: ${data.strength.score}/100 (${data.strength.rating})`, 'success');
+        } else {
+            let errorMsg = `❌ ${data.error}`;
+            
+            // SI LE VAULT EXISTE DÉJÀ
+            if (data.error.includes('existe déjà')) {
+                errorMsg += `<br><br>💡 <strong>Solutions :</strong><ul style="text-align:left; margin:10px;">
+                    <li>Utilisez "Déverrouiller" pour accéder au vault existant</li>
+                    <li>Changez le nom du vault</li>
+                    <li>Ou <button onclick="deleteVault('${vaultName}')" style="background:red;color:white;padding:5px 10px;border:none;cursor:pointer;border-radius:3px;">🗑️ Supprimer le vault existant</button></li>
+                </ul>`;
+            }
+            
+            // Afficher les recommandations si password trop faible
+            if (data.recommendation) {
+                errorMsg += `<br><br>💡 <strong>Recommandation:</strong><br>${data.recommendation}`;
+            }
+            
+            // Afficher le score actuel
+            if (data.strength) {
+                errorMsg += `<br><br>📊 <strong>Score actuel:</strong> ${data.strength.score}/100 (${data.strength.rating})`;
+                errorMsg += `<br><strong>Minimum requis:</strong> 40/100`;
+                
+                // Détails des critères manquants
+                const s = data.strength;
+                errorMsg += '<br><br><strong>Critères:</strong><ul style="text-align:left; margin:10px 0;">';
+                errorMsg += `<li>${s.has_upper ? '✅' : '❌'} Majuscules</li>`;
+                errorMsg += `<li>${s.has_lower ? '✅' : '❌'} Minuscules</li>`;
+                errorMsg += `<li>${s.has_digit ? '✅' : '❌'} Chiffres</li>`;
+                errorMsg += `<li>${s.has_symbol ? '✅' : '❌'} Symboles (!@#$%)</li>`;
+                errorMsg += `<li>${s.length >= 12 ? '✅' : '❌'} 12+ caractères (actuel: ${s.length})</li>`;
+                errorMsg += '</ul>';
+            }
+            
+            showResult('vault-status', errorMsg, 'error');  // ← STRING
+        }
+    } catch (error) {
+        showResult('vault-status', `❌ Erreur: ${error.message}`, 'error');  // ← STRING
+    }
+}
+
+
+
+async function deleteVault(vaultName) {
+    if (!confirm(`⚠️ ATTENTION : Supprimer le vault "${vaultName}" effacera TOUTES vos données de manière IRRÉVERSIBLE.\n\nContinuer ?`)) {
+        return;
+    }
+    
+    const resultDiv = document.getElementById('vault-status');
+    showResult(resultDiv, '⏳ Suppression en cours...', '');
+    
+    try {
+        const response = await fetch('/api/securevault/delete-vault', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ vault_name: vaultName })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            showResult(resultDiv, `✅ ${data.message}<br>Vous pouvez maintenant créer un nouveau vault.`, 'success');
+            currentVaultMasterPassword = null;
+            currentVaultName = 'default';
         } else {
             showResult(resultDiv, `❌ ${data.error}`, 'error');
         }
@@ -483,6 +568,8 @@ async function initVault() {
         showResult(resultDiv, `❌ Erreur: ${error.message}`, 'error');
     }
 }
+
+
 
 async function unlockVault() {
     const masterPw = document.getElementById('vault-master-pw').value;
@@ -508,12 +595,23 @@ async function unlockVault() {
             currentVaultName = vaultName;
             showResult(resultDiv, `🔓 ${data.message}<br>Entrées: ${data.entries_count}`, 'success');
         } else {
-            showResult(resultDiv, `❌ ${data.error}`, 'error');
+            // ← AJOUTE LES DÉTAILS DE L'ERREUR
+            let errorMsg = `❌ ${data.error}`;
+            
+            // Messages spécifiques selon le code d'erreur
+            if (response.status === 404) {
+                errorMsg += `<br><br>💡 <strong>Solution:</strong> Le vault "${vaultName}" n'existe pas.<br>Utilisez d'abord "Initialiser le Vault" pour le créer.`;
+            } else if (response.status === 401) {
+                errorMsg += `<br><br>💡 <strong>Solution:</strong> Vérifiez que le master password est correct.`;
+            }
+            
+            showResult(resultDiv, errorMsg, 'error');
         }
     } catch (error) {
         showResult(resultDiv, `❌ Erreur: ${error.message}`, 'error');
     }
 }
+
 
 async function addVaultEntry() {
     const name = document.getElementById('entry-name').value;

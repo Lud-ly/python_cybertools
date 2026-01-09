@@ -1,17 +1,30 @@
 #!/usr/bin/env python3
 import hashlib
+import bcrypt
 import argparse
 import csv
 from pathlib import Path
 
-def hash_password(password: str, algo: str = "sha256") -> str:
+def hash_password_func(password: str, algo: str = "sha256") -> dict:
     """Hash un password"""
-    if algo == "sha256":
-        return hashlib.sha256(password.encode()).hexdigest()
-    elif algo == "md5":
-        return hashlib.md5(password.encode()).hexdigest()
+    
+    if algo == "md5":
+        hashed = hashlib.md5(password.encode()).hexdigest()
+    elif algo == "sha512":
+        hashed = hashlib.sha512(password.encode()).hexdigest()
+    elif algo == "bcrypt":
+        salt = bcrypt.gensalt()
+        hashed = bcrypt.hashpw(password.encode(), salt).decode()
+    else:  # sha256 par défaut
+        hashed = hashlib.sha256(password.encode()).hexdigest()
+    
+    return {
+        "hash": hashed,
+        "length": len(hashed),
+        "algorithm": algo
+    }
 
-def check_password_strength(pwd: str) -> dict:
+def check_password_strength_func(pwd: str) -> dict:
     """Vérifie force password"""
     score = 0
     issues = []

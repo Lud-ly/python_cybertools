@@ -201,6 +201,7 @@ class SecureVault:
                 self._save_vault(self.crypto.salt)
                 return True
         return False
+        
     
     def _save_vault(self, salt: bytes):
         """Sauvegarder le vault chiffré"""
@@ -217,3 +218,13 @@ class SecureVault:
         with open(self.vault_path, 'wb') as f:
             f.write(salt)
             f.write(encrypted)
+    def list_entries(self) -> List[Dict]:
+        """Lister toutes les entrées (sans les mots de passe)"""
+        return [{
+            'id': e['id'],
+            'name': e['name'],
+            'username': e['username'],
+            'category': e['category'],
+            'created': e['created'],
+            'modified': e['modified']
+        } for e in self.vault_data['entries']]

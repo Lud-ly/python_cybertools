@@ -5,6 +5,9 @@ Password Manager - Gestionnaire de mots de passe chiffré
 import os
 import json
 import base64
+import string
+import secrets
+import re
 from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
@@ -141,3 +144,61 @@ def delete_password_func(data):
     
     except Exception as e:
         return {'error': f'Erreur lors de la suppression: {str(e)}'}
+
+
+def generate_password_func(data):
+    length = data.get("length", 16)
+    characters = string.ascii_letters + string.digits + string.punctuation
+    password = "".join(secrets.choice(characters) for _ in range(length))
+    strength = check_password_strength_func({"password": password})
+    return {
+        "password": password,
+        "length": length,
+        "strength": strength["level"],
+    }
+
+def check_password_strength_func(data):
+    password = data.get("password", "")
+    score = 0
+    suggestions = []
+
+    if len(password) >= 12:
+        score += 2
+    elif len(password) >= 8:
+        score += 1
+    else:
+        suggestions.append("Utilisez au moins 12 caractères")
+
+    if re.search(r"[A-Z]", password):
+        score += 1
+    else:
+        suggestions.append("Ajoutez des lettres majuscules")
+
+    if re.search(r"[a-z]", password):
+        score += 1
+    else:
+        suggestions.append("Ajoutez des lettres minuscules")
+
+    if re.search(r"\d", password):
+        score += 1
+    else:
+        suggestions.append("Ajoutez des chiffres")
+
+    if re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
+        score += 1
+    else:
+        suggestions.append("Ajoutez des caractères spéciaux")
+
+    if score <= 2:
+        level = "Faible"
+    elif score <= 3:
+        level = "Moyen"
+    elif score <= 4:
+        level = "Fort"
+    else:
+        level = "Très Fort"
+
+    if not suggestions:
+        suggestions.append("Excellent mot de passe!")
+
+    return {"score": score, "level": level, "suggestions": suggestions}

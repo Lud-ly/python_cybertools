@@ -2,6 +2,7 @@
 """
 HTTP Brute Force - Test de mots de passe HTTP
 ⚠️ USAGE ÉTHIQUE UNIQUEMENT - Avec autorisation explicite
+Author: Ludovic Mouly
 """
 import requests
 from concurrent.futures import ThreadPoolExecutor
@@ -13,7 +14,6 @@ def try_login(url: str, user: str, pwd: str, session: requests.Session) -> dict:
         data = {"username": user, "password": pwd}
         resp = session.post(url, data=data, timeout=5)
         
-        # Critères de succès (à adapter selon le site)
         success = (
             "Login failed" not in resp.text and 
             "Invalid" not in resp.text and
@@ -46,7 +46,7 @@ def brute_force_func(data):
             return {'error': 'URL, username et liste de passwords requis'}
         
         if threads > 10:
-            threads = 10  # Limitation pour éviter DDoS
+            threads = 10
         
         session = requests.Session()
         session.headers.update({"User-Agent": "Mozilla/5.0"})
@@ -72,7 +72,7 @@ def brute_force_func(data):
             'tested': len(results),
             'found': found_password is not None,
             'password': found_password,
-            'results': results[:10]  # Limite pour ne pas surcharger la réponse
+            'results': results[:10]
         }
     
     except Exception as e:
