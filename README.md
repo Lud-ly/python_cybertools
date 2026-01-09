@@ -1,284 +1,155 @@
-# CyberSec Tools
+# LMCyberSec Tools 🛡️
 
-Suite d'outils de cybersécurité professionnels développée avec Flask et architecture Blueprint. Application web moderne permettant le hachage de mots de passe, l'analyse d'URLs via VirusTotal et la validation d'adresses email.
+Suite complète d'outils de cybersécurité professionnels développée avec Flask et architecture Blueprint. Application web moderne offrant cryptographie, analyse de menaces, reconnaissance OSINT, scanning réseau et gestion sécurisée de mots de passe.
 
-## Fonctionnalités
+## 🚀 Fonctionnalités
 
-### Outils disponibles
+### 🔐 Cryptographie & Mots de passe
+- **Générateur de mots de passe** : Génération sécurisée (8-128 caractères)
+- **Analyse de force** : Score et recommandations sur 100 points
+- **Hachage** : SHA-256, SHA-512, bcrypt, MD5
+- **Validation email** : Vérification syntaxique et domaine
+- **SecureVault** : Gestionnaire de mots de passe chiffré AES-256-GCM avec PBKDF2
 
-- **Hachage de mot de passe** : Support de SHA-256, SHA-512, bcrypt et MD5
-- **Analyse VirusTotal** : Scan d'URLs pour détecter les menaces potentielles
-- **Validation d'email** : Vérification de la syntaxe et du format des adresses email
+### 🛡️ Analyse & Détection
+- **VirusTotal** : Scan d'URLs et fichiers
+- **Scanner Nmap** : Reconnaissance réseau (rapide/personnalisé)
+- **Pentest Nmap Auto** : Modes quick/full/vuln/os/all avec rapports JSON
+- **Port Scanner Pro** : Scan multi-threadé avec bannière grabbing
+- **Analyseur de logs** : Détection brute force, chemins suspects, user-agents malveillants
+- **Enrichissement IOC** : Threat intelligence (VirusTotal + Shodan)
 
-### Architecture technique
+### 🔍 Reconnaissance & OSINT
+- **Git Statistics** : Analyse de dépôts GitHub
+- **Énumération Web** : Découverte de technologies et headers
+- **OSINT** : Collecte d'informations publiques
+- **Brute Force HTTP** : Test de wordlists sur formulaires de login
 
-- Backend Flask avec API Blueprint pour une architecture modulaire
-- Interface web moderne et responsive (HTML5/CSS3/JavaScript)
-- Intégration API VirusTotal v3
-- Gestion sécurisée des variables d'environnement
-- Déploiement production-ready sur Render
+## 📋 Prérequis
 
-## Prérequis
+- Python 3.11+
+- Nmap installé (`brew install nmap` sur macOS, `apt install nmap` sur Linux)
+- Clés API (optionnelles) :
+  - [VirusTotal](https://www.virustotal.com/gui/join-us) (gratuit, 4 requêtes/min)
+  - [Shodan](https://account.shodan.io/register) (gratuit, 100 crédits)
 
-- Python 3.11 ou supérieur
-- Compte VirusTotal pour obtenir une clé API gratuite
-- Git pour le versionnement
-
-## Installation locale
+## ⚙️ Installation locale
 
 ### 1. Cloner le repository
 ```bash
-git clone https://github.com/votre-username/cybersec-tools.git
+git clone https://github.com/Lud-ly/cybersec-tools.git
 cd cybersec-tools
 
-```
+2. Créer un environnement virtuel
 
-### 2. Créer un environnement virtuel
-```python
+bash
 python3 -m venv venv
-source venv/bin/activate # macOS/Linux
-venv\Scripts\activate # Windows
+source venv/bin/activate  # macOS/Linux
+venv\Scripts\activate     # Windows
 
-```
+3. Installer les dépendances
 
-### 3. Installer les dépendances
-```bash
+bash
 pip install -r requirements.txt
-```
 
-### 4. Configuration des variables d'environnement
+4. Configuration des variables d'environnement
 
-Créez un fichier `.env` à la racine du projet :
-```bash
-VIRUSTOTAL_API_KEY=ta_cle_api_virustotal
-```
-
-Pour obtenir une clé API VirusTotal gratuite :
-1. Créez un compte sur https://www.virustotal.com
-2. Accédez à votre profil > API Key
-3. Copiez la clé dans le fichier `.env`
-
-### 5. Lancer l'application
-```bash
-python3 app.py
-```
-
-L'application sera accessible sur `http://localhost:5050`
-
-
-## API Endpoints
-
-### POST /api/hash
-
-Hash un mot de passe avec l'algorithme spécifié.
-
-**Request body :**
-```json
-{
-"password": "mon_mot_de_passe",
-"algorithm": "sha256"
-}
-```
-
-**Algorithmes supportés :** `sha256`, `sha512`, `bcrypt`, `md5`
-
-**Response :**
-```json
-{
-"hash": "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8"
-}
-```
-
-### POST /api/virustotal
-
-Analyse une URL via l'API VirusTotal.
-
-**Request body :**
-```json
-{
-"url": "https://example.com"
-}
-```
-
-**Response :**
-```json
-{
-"url": "https://example.com",
-"positives": 0,
-"total": 89,
-"last_analysis_date": "2025-12-19 18:00:00",
-"vt_id": "base64_encoded_url_id"
-}
-```
-
-### POST /api/email
-
-Valide une adresse email.
-
-**Request body :**
-```json
-{
-"email": "exemple@domaine.com"
-}
-```
-
-**Response :**
-```json
-{
-"valid": true,
-"email": "exemple@domaine.com"
-}
-```
-
-## Déploiement sur Render
-
-### 1. Préparer le repository
-
-Assurez-vous que ces fichiers sont présents :
-
-**Procfile**
-```json
-web: gunicorn app:app
-```
-
-**requirements.txt**
-```json
-Flask==3.0.0
-gunicorn==21.2.0
-requests==2.31.0
-bcrypt==4.1.2
-python-dotenv==1.0.0
-```
-
-### 2. Push sur GitHub
-```bash
-git add .
-git commit -m "Prepare for Render deployment"
-git push origin main
-```
-
-### 3. Créer un service sur Render
-
-1. Allez sur https://render.com et connectez-vous
-2. Cliquez sur **New +** > **Web Service**
-3. Connectez votre repository GitHub
-4. Configuration :
-   - **Name** : `cybersec-tools`
-   - **Environment** : `Python 3`
-   - **Build Command** : `pip install -r requirements.txt`
-   - **Start Command** : `gunicorn app:app`
-   - **Plan** : Free
-
-### 4. Configurer les variables d'environnement
-
-Dans le dashboard Render :
-1. Allez dans **Environment**
-2. Ajoutez : `VIRUSTOTAL_API_KEY` = `votre_cle_api`
-3. Sauvegardez
-
-Le déploiement démarre automatiquement. Votre app sera accessible sur :
-```bash
-https://cybersec-tools.onrender.com
-```
-
-### 5. Domaine personnalisé (optionnel)
-
-Dans Render :
-1. **Settings** > **Custom Domains**
-2. Ajoutez votre domaine : `security.devlm.fr`
-3. Configurez le DNS avec un CNAME vers `cybersec-tools.onrender.com`
-
-## Sécurité
-
-### Bonnes pratiques implémentées
-
-- Variables d'environnement pour les secrets (clés API)
-- Fichier `.env` exclu du versionnement Git
-- Validation des entrées utilisateur côté serveur
-- Timeouts sur les requêtes externes
-- Headers de sécurité HTTP
-- Pas de logs sensibles en production
-
-### Recommandations
-
-- Ne jamais commit la clé API VirusTotal
-- Utiliser HTTPS en production (fourni par Render)
-- Limiter le rate limiting sur les endpoints publics
-- Maintenir les dépendances à jour
-
-## Développement
-
-### Installer en mode développement
-```json
-pip install -e .
-```
-
-### Lancer les tests
-```json
-python -m pytest tests/
-```
-
-### Linter le code
-
-flake8 *.py
-black *.py
+Créez un fichier .env à la racine :
 
 text
+# Obligatoire
+FLASK_ENV=development
 
-## Technologies utilisées
+# Optionnel - APIs externes
+VIRUSTOTAL_API_KEY=votre_cle_virustotal
+SHODAN_API_KEY=votre_cle_shodan
 
-- **Backend** : Flask 3.0, Python 3.13
-- **API** : Flask Blueprint architecture
-- **Sécurité** : bcrypt, hashlib
-- **Intégrations** : VirusTotal API v3
-- **Déploiement** : Gunicorn, Render
-- **Frontend** : HTML5, CSS3 (variables CSS), Vanilla JavaScript
+# Optionnel - Configuration serveur
+FLASK_HOST=0.0.0.0
+FLASK_PORT=5050
 
-## Licence
+5. Lancer l'application
 
-Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
+bash
+python app.py
 
-## Auteur
+Application accessible sur http://localhost:5050
+📡 API Endpoints
+Cryptographie
+POST /api/hash
 
-**Ludovic Mouly**  
-Portfolio : https://lmcv.vercel.app  
-GitHub : https://github.com/Lud-ly
+# Hache un mot de passe avec l'algorithme spécifié.
 
-## Support
+Request :
 
-Pour signaler un bug ou demander une fonctionnalité, ouvrez une issue sur GitHub.
+json
+{
+  "password": "MonMotDePasse123!",
+  "algo": "sha256"
+}
 
-## Changelog
+Response :
 
-### Version 1.0.0 (2025-12-19)
+json
+{
+  "hash": "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8",
+  "algorithm": "sha256"
+}
 
-- Version initiale
-- Hachage de mots de passe (SHA-256, SHA-512, bcrypt, MD5)
-- Intégration VirusTotal pour analyse d'URLs
-- Validation d'adresses email
-- Interface web moderne et responsive
-- Déploiement sur Render
+POST /api/generate-password
 
----
-# Script de Pentest avec VRAI Nmap
+json
+{
+  "length": 16
+}
 
-## Scan rapide (top 100 ports)
-python pentest_auto.py --target example.com --quick
+POST /api/check-strength
 
-## Scan complet avec détection de services
-python pentest_auto.py --target example.com --full
+json
+{
+  "password": "TestPassword123!"
+}
 
-## Scan de vulnérabilités
-python pentest_auto.py --target example.com --vuln
+Analyse & Détection
+POST /api/virus-total
 
-## Scan complet (quick + full + vuln)
-python pentest_auto.py --target example.com --all
+json
+{
+  "url": "https://example.com"
+}
 
-## Scan personnalisé
-python pentest_auto.py --target 192.168.1.1 --full --ports 1-65535
+POST /api/log-analyzer
 
-## Détection OS (nécessite sudo)
-sudo python pentest_auto.py --target example.com --os
+json
+{
+  "log_content": "192.168.1.1 - - [09/Jan/2026:12:00:00] \"GET /admin HTTP/1.1\" 404 512"
+}
 
+POST /api/port-scanner
 
-Développé avec Flask par Ludovic Mouly - 2025
+json
+{
+  "target": "example.com",
+  "ports": "1-1000",
+  "threads": 100,
+  "timeout": 1
+}
+
+POST /api/pentest-nmap
+
+json
+{
+  "target": "example.com",
+  "scan_mode": "full",
+  "ports": "1-1000",
+  "generate_report": true
+}
+
+POST /api/ioc-enrich
+
+json
+{
+  "ioc": "8.8.8.8",
+  "ioc_type": "ip",
+  "vt_api_key": "optionnel",
+ } 

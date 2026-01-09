@@ -5,173 +5,78 @@
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-    color: #e8e8e8;
-    min-height: 100vh;
+    font-family: 'Courier New', monospace;
+    background: #000;
+    color: #fff;
     padding: 20px;
-}
-
-/* Réduire le padding sur mobile */
-@media (max-width: 768px) {
-    body {
-        padding: 10px;
-    }
+    line-height: 1.6;
 }
 
 .container {
-    max-width: 1600px;
+    max-width: 1400px;
     margin: 0 auto;
-    width: 100%;
 }
 
 .header {
     text-align: center;
-    margin-bottom: 40px;
     padding: 40px 20px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 20px;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-@media (max-width: 768px) {
-    .header {
-        padding: 20px 15px;
-        margin-bottom: 20px;
-    }
+    border: 2px solid #fff;
+    margin-bottom: 40px;
 }
 
 .title {
-    font-size: 3.5em;
-    font-weight: 800;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    font-size: 2.5em;
+    font-weight: 700;
     margin-bottom: 10px;
-    text-shadow: 0 0 30px rgba(102, 126, 234, 0.5);
-}
-
-@media (max-width: 768px) {
-    .title {
-        font-size: 2em;
-    }
-}
-
-@media (max-width: 480px) {
-    .title {
-        font-size: 1.5em;
-    }
 }
 
 .subtitle {
-    color: #b8b8b8;
-    font-size: 1.3em;
-}
-
-@media (max-width: 768px) {
-    .subtitle {
-        font-size: 1em;
-    }
+    color: #ccc;
+    font-size: 1.1em;
 }
 
 .tools-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 25px;
     margin-bottom: 40px;
 }
 
-/* Adaptation mobile pour la grille */
-@media (max-width: 768px) {
-    .tools-grid {
-        grid-template-columns: 1fr;
-        gap: 15px;
-        margin-bottom: 20px;
-    }
-}
-
 .tool-card {
-    background: rgba(255, 255, 255, 0.08);
-    border-radius: 20px;
-    padding: 30px;
-    width: 100%;
-    max-width: 100%;
-    backdrop-filter: blur(15px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: #000;
+    padding: 25px;
     transition: all 0.3s ease;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    overflow: hidden;
-}
-
-@media (max-width: 768px) {
-    .tool-card {
-        padding: 20px 15px;
-        border-radius: 15px;
-    }
 }
 
 .tool-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 40px rgba(102, 126, 234, 0.4);
-    border-color: rgba(102, 126, 234, 0.5);
-}
-
-@media (max-width: 768px) {
-    .tool-card:hover {
-        transform: translateY(-2px);
-    }
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+    transform: translateY(-3px);
 }
 
 .tool-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 25px;
+    border-bottom: 1px solid #fff;
     padding-bottom: 15px;
-    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 20px;
     flex-wrap: wrap;
     gap: 10px;
 }
 
-@media (max-width: 768px) {
-    .tool-header {
-        margin-bottom: 15px;
-        padding-bottom: 10px;
-    }
-}
-
 .tool-header h2 {
-    font-size: 1.6em;
-    color: #667eea;
-    font-weight: 700;
-    word-break: break-word;
-}
-
-@media (max-width: 768px) {
-    .tool-header h2 {
-        font-size: 1.3em;
-    }
+    font-size: 1.4em;
+    color: bisque;
 }
 
 .tool-badge {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 6px 18px;
-    border-radius: 20px;
-    font-size: 0.85em;
+    background: #fff;
+    color: #000;
+    padding: 5px 15px;
+    font-size: 0.75em;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    white-space: nowrap;
-}
-
-@media (max-width: 768px) {
-    .tool-badge {
-        font-size: 0.75em;
-        padding: 5px 12px;
-    }
+    letter-spacing: 1px;
 }
 
 .input-group {
@@ -180,151 +85,113 @@ body {
 
 .input-group label {
     display: block;
-    margin-bottom: 10px;
-    color: #b8b8b8;
+    margin-bottom: 8px;
     font-weight: 600;
-    font-size: 0.95em;
-    word-wrap: break-word;
 }
 
-.input-group input,
-.input-group select,
-.input-group textarea {
+input, select, textarea {
     width: 100%;
-    max-width: 100%;
-    padding: 14px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 2px solid rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
-    color: #e8e8e8;
+    padding: 12px;
+    background: #000;
+    border: 1px solid #fff;
+    color: #fff;
+    font-family: 'Courier New', monospace;
     font-size: 1em;
     transition: all 0.3s ease;
-    box-sizing: border-box;
 }
 
-@media (max-width: 768px) {
-    .input-group input,
-    .input-group select,
-    .input-group textarea {
-        padding: 12px;
-        font-size: 16px; /* Évite le zoom automatique sur iOS */
-    }
-}
-
-.input-group input:focus,
-.input-group select:focus,
-.input-group textarea:focus {
+input:focus, select:focus, textarea:focus {
     outline: none;
-    border-color: #667eea;
-    background: rgba(255, 255, 255, 0.08);
-    box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+    border-color: #fff;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+input::placeholder, textarea::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+textarea {
+    resize: vertical;
+    min-height: 100px;
 }
 
 .btn {
-    padding: 14px 32px;
-    border: none;
-    border-radius: 10px;
-    font-size: 1em;
-    font-weight: 700;
+    padding: 12px 30px;
+    background: #000;
+    border: 2px solid #fff;
+    color: #fff;
     cursor: pointer;
+    font-family: 'Courier New', monospace;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
     transition: all 0.3s ease;
     margin-top: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    width: 100%;
-    max-width: 100%;
 }
 
-@media (min-width: 769px) {
-    .btn {
-        width: auto;
-    }
+.btn:hover {
+    background: #fff;
+    color: #000;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
 }
 
-.btn-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-}
-
-.btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
-}
-
-.btn-primary:disabled {
-    opacity: 0.5;
+.btn:disabled {
+    opacity: 0.3;
     cursor: not-allowed;
 }
 
 .result {
     margin-top: 20px;
-    padding: 20px;
-    background: rgba(0, 0, 0, 0.4);
-    border-radius: 12px;
-    border-left: 4px solid #667eea;
-    word-wrap: break-word;
-    word-break: break-word;
+    padding: 15px;
+    background: #000;
+    border: 1px solid #fff;
+    border-left: 4px solid #fff;
     max-height: 500px;
     overflow-y: auto;
-    overflow-x: hidden;
-    font-size: 0.95em;
-    line-height: 1.6;
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
+    word-wrap: break-word;
 }
 
-@media (max-width: 768px) {
-    .result {
-        padding: 15px;
-        font-size: 0.9em;
-        max-height: 400px;
-    }
-}
-
-.result.success {
-    border-left-color: #10b981;
+.result::before {
+    content: "OUTPUT:";
+    display: block;
+    font-weight: bold;
+    margin-bottom: 10px;
 }
 
 .result.error {
-    border-left-color: #ef4444;
+    background: #1a1a1a;
+}
+
+.result.error::before {
+    content: "ERROR:";
 }
 
 .footer {
     text-align: center;
     padding: 30px 20px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 20px;
+    border: 1px solid #fff;
     margin-top: 40px;
 }
 
-@media (max-width: 768px) {
-    .footer {
-        padding: 20px 15px;
-        margin-top: 20px;
-    }
-}
-
 .footer-link {
-    color: #667eea;
+    color: #fff;
     text-decoration: none;
     font-weight: 700;
-    transition: color 0.3s ease;
-    word-break: break-word;
+    transition: all 0.3s ease;
 }
 
 .footer-link:hover {
-    color: #764ba2;
+    text-shadow: 0 0 10px #fff;
 }
 
 .loading {
     display: inline-block;
     width: 20px;
     height: 20px;
-    border: 3px solid rgba(255, 255, 255, 0.3);
+    border: 3px solid #fff;
     border-radius: 50%;
-    border-top-color: #667eea;
-    animation: spin 1s ease-in-out infinite;
+    border-top-color: transparent;
+    animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
@@ -332,47 +199,69 @@ body {
 }
 
 pre {
-    background: rgba(0, 0, 0, 0.6);
+    background: #111;
     padding: 15px;
-    border-radius: 8px;
+    border: 1px solid #fff;
     overflow-x: auto;
-    font-family: 'Courier New', monospace;
     font-size: 0.9em;
-    max-width: 100%;
-    word-wrap: break-word;
-    white-space: pre-wrap;
 }
 
-@media (max-width: 768px) {
-    pre {
-        padding: 10px;
-        font-size: 0.8em;
-    }
-}
-
-textarea {
-    font-family: 'Courier New', monospace;
-    resize: vertical;
-    min-height: 100px;
+code {
+    background: #111;
+    padding: 2px 5px;
+    border: 1px solid #fff;
 }
 
 .section-title {
     text-align: center;
     margin: 60px 0 30px;
     font-size: 2em;
-    color: #667eea;
     font-weight: 700;
 }
 
+/* Mobile */
 @media (max-width: 768px) {
-    .section-title {
-        margin: 30px 0 20px;
-        font-size: 1.5em;
+    body {
+        padding: 10px;
+    }
+    
+    .header {
+        padding: 20px 15px;
+        margin-bottom: 20px;
+    }
+    
+    .title {
+        font-size: 1.8em;
+    }
+    
+    .tools-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .tool-card {
+        padding: 15px;
+    }
+    
+    input, select, textarea {
+        font-size: 16px; /* Évite zoom iOS */
     }
 }
 
-/* Scroll horizontal pour les contenus longs */
-.overflow-scroll {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #000;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #fff;
+    border: 1px solid #000;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    box-shadow: 0 0 10px #fff;
 }

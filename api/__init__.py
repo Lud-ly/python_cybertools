@@ -3,6 +3,7 @@ Package API
 Initialisation et enregistrement des routes
 """
 from flask import Flask
+from api.auth import auth_bp
 
 def register_routes(app: Flask):
     """Enregistre tous les blueprints dans l'application Flask"""
@@ -22,5 +23,6 @@ def register_routes(app: Flask):
     app.register_blueprint(vault_bp, url_prefix='/api')
     app.register_blueprint(health_bp, url_prefix='/api')
     app.register_blueprint(threat_intel_bp, url_prefix='/api')
+    app.register_blueprint(auth_bp, url_prefix='/api')
     
     print("✅ Tous les blueprints API enregistrés")

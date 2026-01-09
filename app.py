@@ -2,39 +2,34 @@ from flask import Flask, render_template
 from flask_cors import CORS
 import os
 
-# Import de la configuration
 from config import get_config
-
-# Import de la fonction d'enregistrement des routes
 from api import register_routes
+from middleware.cors import setup_cors  # ← AJOUTE
 
-# Créer l'application Flask
+
 app = Flask(__name__)
 
-# Charger la configuration selon l'environnement
+# Configuration
 env = os.getenv('FLASK_ENV', 'development')
 config = get_config(env)
 app.config.from_object(config)
-
-# Initialiser la configuration (créer les dossiers, etc.)
 config.init_app(app)
 
-# Activer CORS
-CORS(app, origins=app.config['CORS_ORIGINS'])
+# ========== APPLIQUER CORS MIDDLEWARE ==========
+setup_cors(app)  # ← REMPLACE le CORS(app) actuel
 
-# Enregistrer toutes les routes API
+
+# Enregistrer les routes
 register_routes(app)
 
 
 @app.route("/")
 def index():
-    """Page d'accueil"""
     return render_template("index.html")
 
 
 @app.route("/docs")
 def api_docs():
-    """Documentation API simple"""
     routes = []
     for rule in app.url_map.iter_rules():
         if rule.endpoint != 'static':
@@ -54,19 +49,16 @@ def api_docs():
 
 @app.errorhandler(404)
 def not_found(error):
-    """Gestion des erreurs 404"""
     return {"error": "Route non trouvée"}, 404
 
 
 @app.errorhandler(500)
 def internal_error(error):
-    """Gestion des erreurs 500"""
     return {"error": "Erreur interne du serveur"}, 500
 
 
 @app.errorhandler(413)
 def request_entity_too_large(error):
-    """Gestion des fichiers trop volumineux"""
     return {"error": "Fichier trop volumineux (max 16MB)"}, 413
 
 
