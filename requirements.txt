@@ -72,3 +72,6 @@ pyasn1_modules==0.4.2
 pylsqpack==0.3.22
 pyparsing==3.2.3
 service-identity==24.2.0
+
+# ========== CLI & Display ==========
+rich==13.7.0
